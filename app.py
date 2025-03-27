@@ -96,7 +96,7 @@ def convert_pdf():
         pdf_url = request.form['pdfUrl']
         try:
             # Faz a requisição ignorando SSL e suprimindo avisos
-            response = requests.get(pdf_url, verify=False, timeout=10)
+            response = requests.get(pdf_url, verify=False, timeout=120)
             if response.status_code != 200:
                 return f"Erro ao baixar o PDF da URL: Status {response.status_code}", 400
             with open(temp_path, 'wb') as f:

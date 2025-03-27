@@ -82,13 +82,21 @@ convertBtn.addEventListener('click', async () => {
     complete.classList.add('hidden');
 
     try {
+        // Configura um timeout maior (ex.: 2 minutos)
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 120000); // 120 segundos
+
         const response = await fetch('/convert', {
             method: 'POST',
-            body: formData
+            body: formData,
+            signal: controller.signal
         });
+
+        clearTimeout(timeoutId);
 
         if (!response.ok) {
             const errorText = await response.text();
+            console.error('Erro na resposta do servidor:', errorText);
             throw new Error(errorText || 'Erro ao converter o arquivo');
         }
 
@@ -109,7 +117,8 @@ convertBtn.addEventListener('click', async () => {
             urlMessage.classList.add('hidden');
         }
     } catch (error) {
-        alert('Erro: ' + error.message);
+        console.error('Erro no fetch:', error);
+        alert(`Erro: ${error.message || 'Ocorreu um problema ao processar a requisição. Tente novamente.'}`);
     } finally {
         convertBtn.disabled = false;
         convertBtn.querySelector('.loader').classList.add('hidden');
