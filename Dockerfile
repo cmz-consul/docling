@@ -1,37 +1,38 @@
 FROM python:3.11-slim-bookworm
 
+# Configuração para SSH (se necessário para o Git)
 ENV GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no"
 
+# Instalação de dependências do sistema
 RUN apt-get update \
     && apt-get install -y libgl1 libglib2.0-0 curl wget git procps \
     && rm -rf /var/lib/apt/lists/*
 
-# This will install torch with *only* cpu support
-# Remove the --extra-index-url part if you want to install all the gpu requirements
-# For more details in the different torch distribution visit https://pytorch.org/.
+# Instalação do docling com suporte apenas para CPU
+# Remova '--extra-index-url https://download.pytorch.org/whl/cpu' se precisar de suporte a GPU
 RUN pip install --no-cache-dir docling --extra-index-url https://download.pytorch.org/whl/cpu
-# docker build -t meu-projeto .
 
-
+# Configuração de variáveis de ambiente
 ENV HF_HOME=/tmp/
 ENV TORCH_HOME=/tmp/
-
-# Instala as dependências do projeto
-RUN pip install --no-cache-dir -r requirements.txt
-
-COPY docs/examples/minimal.py /root/minimal.py
-
-RUN docling-tools models download
-
-# On container environments, always set a thread budget to avoid undesired thread congestion.
 ENV OMP_NUM_THREADS=4
 
-# On container shell:
-# > cd /root/
-# > python minimal.py
+# Copia o requirements.txt e instala as dependências
+COPY requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir -r /app/requirements.txt
 
-# Running as `docker run -e DOCLING_ARTIFACTS_PATH=/root/.cache/docling/models` will use the
-# model weights included in the container image.
+# Copia o app.py e a pasta /static para o contêiner
+COPY app.py /app/app.py
+COPY static /app/static
 
-docker build -t meu-projeto .
-docker run -p 5000:5000 meu-projeto
+# Baixa os modelos do docling
+RUN docling-tools models download
+
+# Define o diretório de trabalho
+WORKDIR /app
+
+# Expõe a porta 5000 (ajuste se necessário)
+EXPOSE 5000
+
+# Comando para executar o app.py
+CMD ["python", "app.py"]
