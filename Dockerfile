@@ -10,9 +10,14 @@ RUN apt-get update \
 # Remove the --extra-index-url part if you want to install all the gpu requirements
 # For more details in the different torch distribution visit https://pytorch.org/.
 RUN pip install --no-cache-dir docling --extra-index-url https://download.pytorch.org/whl/cpu
+docker build -t meu-projeto .
+
 
 ENV HF_HOME=/tmp/
 ENV TORCH_HOME=/tmp/
+
+# Instala as dependências do projeto
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY docs/examples/minimal.py /root/minimal.py
 
