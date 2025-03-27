@@ -33,7 +33,5 @@ ENV OMP_NUM_THREADS=4
 # Running as `docker run -e DOCLING_ARTIFACTS_PATH=/root/.cache/docling/models` will use the
 # model weights included in the container image.
 
-CMD ["flask", "run", "--host=0.0.0.0", "--port=5000"]
-
 docker build -t meu-projeto .
 docker run -p 5000:5000 meu-projeto
