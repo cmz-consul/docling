@@ -10,7 +10,7 @@ RUN apt-get update \
 # Remove the --extra-index-url part if you want to install all the gpu requirements
 # For more details in the different torch distribution visit https://pytorch.org/.
 RUN pip install --no-cache-dir docling --extra-index-url https://download.pytorch.org/whl/cpu
-docker build -t meu-projeto .
+# docker build -t meu-projeto .
 
 
 ENV HF_HOME=/tmp/
@@ -32,3 +32,8 @@ ENV OMP_NUM_THREADS=4
 
 # Running as `docker run -e DOCLING_ARTIFACTS_PATH=/root/.cache/docling/models` will use the
 # model weights included in the container image.
+
+CMD ["flask", "run", "--host=0.0.0.0", "--port=5000"]
+
+docker build -t meu-projeto .
+docker run -p 5000:5000 meu-projeto
